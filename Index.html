@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy Birthday From Your Loved One</title>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Comic Neue', cursive;
+      /* Perubahan: Latar belakang gradasi pink lembut yang lebih menyatu */
+      background: linear-gradient(145deg, #fff0f5, #ffe4e1, #fffaf0, #fdf2f8);
+      color:#444; text-align:center;
+      min-height:100vh; display:flex;
+      flex-direction: column;
+      align-items:center;
+      padding-top:50px; position:relative;
+      overflow-x:hidden;
+    }
+    #particles-js { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; opacity: 0.4; } /* Perubahan: Opacity untuk partikel */
+    .container { max-width:800px; width:90%; padding:30px; position:relative; z-index:1; }
+    h1 { font-size:2.8rem; color:#ff69b4; margin-bottom:20px; animation:fadeIn 1s ease; }
+    p { font-size:1.2rem; color:#555; animation:fadeIn 1.2s ease; }
+    .button {
+      padding:10px 20px; font-size:1.1rem;
+      background:#ffd1dc; color:#444; font-weight:bold;
+      border:2px solid #ffc0cb; border-radius:25px;
+      cursor:pointer; margin:15px;
+      transition:transform .3s, background .3s;
+      box-shadow:0 4px 10px rgba(255,192,203,.3);
+      animation:wiggle 3s ease-in-out infinite;
+    }
+    .button:hover { background:#ffe4e1; transform:scale(1.05); }
+    .hint-button { position:fixed; top:10px; left:10px; font-size:2rem; cursor:pointer; z-index:2; animation:fadeIn 1.5s ease-in; }
+    .pin-input {
+      padding:10px; font-size:1rem;
+      border:1px solid #f0e6f0; border-radius:10px;
+      margin:10px; width:200px;
+    }
+    .message { margin:20px 0; font-size:1.2rem; color:#444; min-height:3em; }
+    .gallery { margin:40px 0 100px; }
+    .gallery-cta { font-size:1.3rem; color:#ff69b4; margin-bottom:20px; animation:fadeIn 1.5s ease; }
+    .gallery-section {
+      background:rgba(255,255,255,.4); border:1px solid #f0e6f0;
+      border-radius:15px; opacity:1; visibility:visible; height:auto;
+      margin:30px 0; padding:20px; transform:none; transition:none;
+      display:flex; flex-direction:column; align-items:center;
+    }
+    .gallery-section img {
+      width:100%; max-width:280px; border-radius:15px;
+      object-fit:cover; transition:transform .3s;
+      animation:zoomIn .8s ease;
+    }
+    .gallery-section img:hover { transform:scale(1.05); cursor:pointer; }
+    .gallery-section p { font-size:1rem; color:#555; margin-top:10px; }
+    footer {
+      margin-top: 60px;
+      font-size: 0.9rem;
+      color: #888;
+      opacity: 0.7;
+      text-align: center;
+    }
+    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+    @keyframes wiggle {
+      0%,100%{transform:rotate(0deg);}25%{transform:rotate(-3deg);}75%{transform:rotate(3deg);}
+    }
+    @keyframes zoomIn { from{transform:scale(0.8);} to{transform:scale(1);} }
+    .hidden { display:none; }
+    @media(max-width:600px){ h1{font-size:2.2rem;} .gallery-section img{max-width:240px;} }
+    @media(max-width:400px){ h1{font-size:1.8rem;} .gallery-section img{max-width:200px;} }
+    
+    /* Blossoming Flower Animation from CodePen - Modified */
+    .flowers-container {
+      position: relative;
+      width: 100%;
+      height: 550px; /* Perubahan: Tinggi area animasi */
+      display: flex;
+      justify-content: center;
+      align-items: flex-end; /* Bunga tumbuh dari bawah */
+      margin: 20px 0 40px 0;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    /* CSS dari CodePen dimulai di sini - Modified */
+    .flowers {
+      position: relative;
+      /* Perubahan: Membesarkan bunga */
+      transform: scale(1.1); /* Diperbesar dari 0.9 */
+    }
+    .night {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      width: 100%;
+      height: 100%;
+      filter: blur(0.1vmin);
+      /* Perubahan: Latar belakang yang lebih menyatu dengan tema pink */
+      background-image:
+        radial-gradient(ellipse at top, transparent 0%, rgba(255, 240, 245, 0.8)), /* Pink lembut */
+        radial-gradient(ellipse at bottom, rgba(255, 240, 245, 0.8), rgba(255, 228, 225, 0.6)), /* Pink muda */
+        repeating-linear-gradient(220deg, rgba(255, 182, 193, 0.05) 0px, rgba(255, 182, 193, 0.05) 19px, transparent 19px, transparent 22px),
+        repeating-linear-gradient(189deg, rgba(255, 192, 203, 0.05) 0px, rgba(255, 192, 203, 0.05) 19px, transparent 19px, transparent 22px),
+        repeating-linear-gradient(148deg, rgba(255, 105, 180, 0.05) 0px, rgba(255, 105, 180, 0.05) 19px, transparent 19px, transparent 22px),
+        linear-gradient(90deg, rgba(255, 215, 225, 0.5), rgba(255, 240, 245, 0.7)); /* Gradasi pink */
+    }
+
+    .flower {
+      position: absolute;
+      bottom: 10vmin;
+      transform-origin: bottom center;
+      z-index: 10;
+      --fl-speed: 0.8s;
+    }
+    .flower--1 {
+      animation: moving-flower-1 4s linear infinite;
+    }
+    .flower--1 .flower__line {
+      height: 70vmin;
+      animation-delay: 0.3s;
+    }
+    .flower--1 .flower__line__leaf--1 { animation: blooming-leaf-right var(--fl-speed) 1.6s backwards; }
+    .flower--1 .flower__line__leaf--2 { animation: blooming-leaf-right var(--fl-speed) 1.4s backwards; }
+    .flower--1 .flower__line__leaf--3 { animation: blooming-leaf-left var(--fl-speed) 1.2s backwards; }
+    .flower--1 .flower__line__leaf--4 { animation: blooming-leaf-left var(--fl-speed) 1s backwards; }
+    .flower--1 .flower__line__leaf--5 { animation: blooming-leaf-right var(--fl-speed) 1.8s backwards; }
+    .flower--1 .flower__line__leaf--6 { animation: blooming-leaf-left var(--fl-speed) 2s backwards; }
+
+    .flower--2 {
+      left: 50%;
+      transform: rotate(20deg);
+      animation: moving-flower-2 4s linear infinite;
+    }
+    .flower--2 .flower__line {
+      height: 60vmin;
+      animation-delay: 0.6s;
+    }
+    .flower--2 .flower__line__leaf--1 { animation: blooming-leaf-right var(--fl-speed) 1.9s backwards; }
+    .flower--2 .flower__line__leaf--2 { animation: blooming-leaf-right var(--fl-speed) 1.7s backwards; }
+    .flower--2 .flower__line__leaf--3 { animation: blooming-leaf-left var(--fl-speed) 1.5s backwards; }
+    .flower--2 .flower__line__leaf--4 { animation: blooming-leaf-left var(--fl-speed) 1.3s backwards; }
+
+    .flower--3 {
+      left: 50%;
+      transform: rotate(-15deg);
+      animation: moving-flower-3 4s linear infinite;
+    }
+    .flower--3 .flower__line {
+      animation-delay: 0.9s;
+    }
+    .flower--3 .flower__line__leaf--1 { animation: blooming-leaf-right var(--fl-speed) 2.5s backwards; }
+    .flower--3 .flower__line__leaf--2 { animation: blooming-leaf-right var(--fl-speed) 2.3s backwards; }
+    .flower--3 .flower__line__leaf--3 { animation: blooming-leaf-left var(--fl-speed) 2.1s backwards; }
+    .flower--3 .flower__line__leaf--4 { animation: blooming-leaf-left var(--fl-speed) 1.9s backwards; }
+
+    .flower__leafs {
+      position: relative;
+      animation: blooming-flower 2s backwards;
+    }
+    .flower__leafs--1 { animation-delay: 1.1s; }
+    .flower__leafs--2 { animation-delay: 1.4s; }
+    .flower__leafs--3 { animation-delay: 1.7s; }
+    .flower__leafs::after {
+      content: ""; position: absolute; left: 0; top: 0;
+      transform: translate(-50%, -100%); width: 8vmin; height: 8vmin;
+      background-color: #ffb6c1; /* Pink muda */
+      filter: blur(10vmin);
+    }
+
+    .flower__leaf {
+      position: absolute; bottom: 0; left: 50%;
+      width: 8vmin; height: 11vmin;
+      border-radius: 51% 49% 47% 53% / 44% 45% 55% 69%;
+      /* Perubahan: Warna daun bunga lebih pink */
+      background-color: #ffb6c1; /* Pink muda */
+      background-image: linear-gradient(to top, #ff69b4, #ffb6c1); /* Gradasi pink */
+      transform-origin: bottom center; opacity: 0.9;
+      box-shadow: inset 0 0 2vmin rgba(255, 255, 255, 0.7);
+    }
+    .flower__leaf--1 { transform: translate(-10%, 1%) rotateY(40deg) rotateX(-50deg); }
+    .flower__leaf--2 { transform: translate(-50%, -4%) rotateX(40deg); }
+    .flower__leaf--3 { transform: translate(-90%, 0%) rotateY(45deg) rotateX(50deg); }
+    .flower__leaf--4 {
+      width: 8vmin; height: 8vmin; transform-origin: bottom left;
+      border-radius: 4vmin 10vmin 4vmin 4vmin;
+      transform: translate(-0%, 18%) rotateX(70deg) rotate(-43deg);
+      /* Perubahan: Warna daun bunga keempat */
+      background-image: linear-gradient(to top, #ff1493, #ffb6c1); /* Pink tua ke muda */
+      z-index: 1; opacity: 0.8;
+    }
+
+    .flower__white-circle {
+      position: absolute; left: -3.5vmin; top: -3vmin;
+      width: 9vmin; height: 4vmin; border-radius: 50%;
+      background-color: #fff;
+    }
+    .flower__white-circle::after {
+      content: ""; position: absolute; left: 50%; top: 45%;
+      transform: translate(-50%, -50%); width: 60%; height: 60%;
+      border-radius: inherit;
+      background-image:
+        repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        repeating-linear-gradient(67.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        repeating-linear-gradient(112.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        repeating-linear-gradient(112.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        repeating-linear-gradient(22.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        repeating-linear-gradient(22.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        repeating-linear-gradient(157.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        repeating-linear-gradient(67.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        repeating-linear-gradient(67.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px),
+        linear-gradient(90deg, rgb(255, 235, 18), rgb(255, 206, 0));
+    }
+
+    .flower__line {
+      height: 55vmin; width: 1.5vmin;
+      background-image:
+        linear-gradient(to left, rgba(0, 0, 0, 0.2), transparent, rgba(255, 255, 255, 0.2)),
+        /* Perubahan: Warna batang bunga lebih hijau muda */
+        linear-gradient(to top, transparent 10%, #87ceeb, #98fb98); /* Biru langit ke hijau muda */
+      box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
+      animation: grow-flower-tree 4s backwards;
+    }
+    .flower__line__leaf {
+      --w: 7vmin; --h: calc(var(--w) + 2vmin);
+      position: absolute; top: 20%; left: 90%;
+      width: var(--w); height: var(--h);
+      border-top-right-radius: var(--h); border-bottom-left-radius: var(--h);
+      /* Perubahan: Warna daun batang lebih hijau */
+      background-image: linear-gradient(to top, rgba(144, 238, 144, 0.6), #98fb98); /* Hijau muda */
+    }
+    .flower__line__leaf--1 { transform: rotate(70deg) rotateY(30deg); }
+    .flower__line__leaf--2 { top: 45%; transform: rotate(70deg) rotateY(30deg); }
+    .flower__line__leaf--3,
+    .flower__line__leaf--4,
+    .flower__line__leaf--6 {
+      border-top-right-radius: 0; border-bottom-left-radius: 0;
+      border-top-left-radius: var(--h); border-bottom-right-radius: var(--h);
+      left: -460%; top: 12%; transform: rotate(-70deg) rotateY(30deg);
+    }
+    .flower__line__leaf--4 { top: 40%; }
+    .flower__line__leaf--5 {
+      top: 0; transform-origin: left;
+      transform: rotate(70deg) rotateY(30deg) scale(0.6);
+    }
+    .flower__line__leaf--6 {
+      top: -2%; left: -450%; transform-origin: right;
+      transform: rotate(-70deg) rotateY(30deg) scale(0.6);
+    }
+
+    .flower__light {
+      position: absolute; bottom: 0vmin; width: 1vmin; height: 1vmin;
+      background-color: rgb(255, 251, 0); border-radius: 50%;
+      filter: blur(0.2vmin); animation: light-ans 4s linear infinite backwards;
+    }
+    .flower__light:nth-child(odd) { background-color: #ffb6c1; } /* Perubahan: Cahaya cenderung pink */
+    .flower__light--1 { left: -2vmin; animation-delay: 1s; }
+    .flower__light--2 { left: 3vmin; animation-delay: 0.5s; }
+    .flower__light--3 { left: -6vmin; animation-delay: 0.3s; }
+    .flower__light--4 { left: 6vmin; animation-delay: 0.9s; }
+    .flower__light--5 { left: -1vmin; animation-delay: 1.5s; }
+    .flower__light--6 { left: -4vmin; animation-delay: 3s; }
+    .flower__light--7 { left: 3vmin; animation-delay: 2s; }
+    .flower__light--8 { left: -6vmin; animation-delay: 3.5s; }
+
+    /* Animations */
+    @keyframes moving-flower-1 { 0%,100% { transform: rotate(2deg); } 50% { transform: rotate(-2deg); } }
+    @keyframes moving-flower-2 { 0%,100% { transform: rotate(18deg); } 50% { transform: rotate(14deg); } }
+    @keyframes moving-flower-3 { 0%,100% { transform: rotate(-18deg); } 50% { transform: rotate(-20deg) rotateY(-10deg); } }
+    @keyframes blooming-leaf-right { 0% { transform-origin: left; transform: rotate(70deg) rotateY(30deg) scale(0); } }
+    @keyframes blooming-leaf-left { 0% { transform-origin: right; transform: rotate(-70deg) rotateY(30deg) scale(0); } }
+    @keyframes grow-flower-tree { 0% { height: 0; border-radius: 1vmin; } }
+    @keyframes blooming-flower { 0% { transform: scale(0); } }
+    @keyframes light-ans {
+      0% { opacity: 0; transform: translateY(0vmin); }
+      25% { opacity: 1; transform: translateY(-5vmin) translateX(-2vmin); }
+      50% { opacity: 1; transform: translateY(-15vmin) translateX(2vmin); filter: blur(0.2vmin); }
+      75% { transform: translateY(-20vmin) translateX(-2vmin); filter: blur(0.2vmin); }
+      100% { transform: translateY(-30vmin); opacity: 0; filter: blur(1vmin); }
+    }
+
+    /* Hide elements initially for animation */
+    .flower__leaf,
+    .flower__line,
+    .flower__line__leaf,
+    .flower__light,
+    .flower__leafs {
+        opacity: 0;
+    }
+
+    /* Show elements when not loaded class is removed */
+    body:not(.not-loaded) .flower__leaf,
+    body:not(.not-loaded) .flower__line,
+    body:not(.not-loaded) .flower__line__leaf,
+    body:not(.not-loaded) .flower__light,
+    body:not(.not-loaded) .flower__leafs {
+        opacity: 1;
+    }
+
+    /* Birthday Content Styling */
+    .birthday-content {
+      position: relative;
+      z-index: 3;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.4); /* Perubahan: Transparansi latar konten */
+      padding: 25px;
+      border-radius: 25px;
+      backdrop-filter: blur(4px); /* Perubahan: Blur latar belakang konten */
+      margin-top: -60px; /* Naikkan sedikit ke atas bunga */
+      border: 1px solid rgba(255, 192, 203, 0.3); /* Perubahan: Border lembut */
+      box-shadow: 0 8px 32px rgba(255, 182, 193, 0.2); /* Perubahan: Shadow pink */
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .flowers-container {
+        height: 450px;
+      }
+      .flowers {
+        transform: scale(0.9); /* Perubahan: Skala lebih kecil di layar kecil */
+      }
+      .birthday-content {
+        margin-top: -80px;
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body class="not-loaded"> <!-- Tambahkan class not-loaded untuk kontrol animasi -->
+  <div id="particles-js"></div>
+  <div class="container">
+
+    <!-- Halaman Pertanyaan -->
+    <div id="question-page">
+      <h1>Apakah Kamu Wulan?</h1>
+      <iframe src="https://tenor.com/embed/4489238850091129385" width="240" height="240" frameborder="0" allowfullscreen></iframe>
+      <button class="button" onclick="showPassword()">Hooh</button>
+      <button class="button" onclick="showNotWulan()">Bukan</button>
+    </div>
+
+    <!-- Halaman Password -->
+    <div id="password-page" class="hidden">
+      <span class="hint-button" onclick="showHint()">❓</span>
+      <h1>Masukkan PIN</h1>
+      <iframe src="https://tenor.com/embed/10456661395016736542" width="240" height="240" frameborder="0" allowfullscreen></iframe>
+      <p>Ketik PIN rahasia kita kalau kamu benar-benar Wulan</p>
+      <input type="number" class="pin-input" id="pin-input" placeholder="Masukkan PIN">
+      <button class="button" onclick="checkPin()">Kirim</button>
+    </div>
+
+    <!-- Halaman Utama -->
+    <div id="main-page" class="hidden">
+      <div class="flowers-container">
+        <div class="night"></div>
+        <div class="flowers">
+          <div class="flower flower--1">
+            <div class="flower__leafs flower__leafs--1">
+              <div class="flower__leaf flower__leaf--1"></div>
+              <div class="flower__leaf flower__leaf--2"></div>
+              <div class="flower__leaf flower__leaf--3"></div>
+              <div class="flower__leaf flower__leaf--4"></div>
+              <div class="flower__white-circle"></div>
+              <div class="flower__light flower__light--1"></div>
+              <div class="flower__light flower__light--2"></div>
+              <div class="flower__light flower__light--3"></div>
+              <div class="flower__light flower__light--4"></div>
+              <div class="flower__light flower__light--5"></div>
+              <div class="flower__light flower__light--6"></div>
+              <div class="flower__light flower__light--7"></div>
+              <div class="flower__light flower__light--8"></div>
+            </div>
+            <div class="flower__line">
+              <div class="flower__line__leaf flower__line__leaf--1"></div>
+              <div class="flower__line__leaf flower__line__leaf--2"></div>
+              <div class="flower__line__leaf flower__line__leaf--3"></div>
+              <div class="flower__line__leaf flower__line__leaf--4"></div>
+              <div class="flower__line__leaf flower__line__leaf--5"></div>
+              <div class="flower__line__leaf flower__line__leaf--6"></div>
+            </div>
+          </div>
+          <div class="flower flower--2">
+            <div class="flower__leafs flower__leafs--2">
+              <div class="flower__leaf flower__leaf--1"></div>
+              <div class="flower__leaf flower__leaf--2"></div>
+              <div class="flower__leaf flower__leaf--3"></div>
+              <div class="flower__leaf flower__leaf--4"></div>
+              <div class="flower__white-circle"></div>
+              <div class="flower__light flower__light--1"></div>
+              <div class="flower__light flower__light--2"></div>
+              <div class="flower__light flower__light--3"></div>
+              <div class="flower__light flower__light--4"></div>
+              <div class="flower__light flower__light--5"></div>
+              <div class="flower__light flower__light--6"></div>
+              <div class="flower__light flower__light--7"></div>
+              <div class="flower__light flower__light--8"></div>
+            </div>
+            <div class="flower__line">
+              <div class="flower__line__leaf flower__line__leaf--1"></div>
+              <div class="flower__line__leaf flower__line__leaf--2"></div>
+              <div class="flower__line__leaf flower__line__leaf--3"></div>
+              <div class="flower__line__leaf flower__line__leaf--4"></div>
+            </div>
+          </div>
+          <div class="flower flower--3">
+            <div class="flower__leafs flower__leafs--3">
+              <div class="flower__leaf flower__leaf--1"></div>
+              <div class="flower__leaf flower__leaf--2"></div>
+              <div class="flower__leaf flower__leaf--3"></div>
+              <div class="flower__leaf flower__leaf--4"></div>
+              <div class="flower__white-circle"></div>
+              <div class="flower__light flower__light--1"></div>
+              <div class="flower__light flower__light--2"></div>
+              <div class="flower__light flower__light--3"></div>
+              <div class="flower__light flower__light--4"></div>
+              <div class="flower__light flower__light--5"></div>
+              <div class="flower__light flower__light--6"></div>
+              <div class="flower__light flower__light--7"></div>
+              <div class="flower__light flower__light--8"></div>
+            </div>
+            <div class="flower__line">
+              <div class="flower__line__leaf flower__line__leaf--1"></div>
+              <div class="flower__line__leaf flower__line__leaf--2"></div>
+              <div class="flower__line__leaf flower__line__leaf--3"></div>
+              <div class="flower__line__leaf flower__line__leaf--4"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="birthday-content">
+        <h1>Selamat Ulang Tahun Yang ke 19, Ya Wulan Sayang Akuu</h1>
+        <div class="message">
+          <p>Makin Gede Kurang Kurangi Marah e Yaaa</p>
+        </div>
+        <!-- Tombol Kirim PAP -->
+        <div style="margin-top: 40px;">
+          <p style="font-size: 1.1rem; color: #ff69b4;">Punya PAP Cantik Hari Ini? 🥺</p>
+          <button class="button" onclick="window.open('https://www.instagram.com/direct/t/17842418507664115', '_blank')">
+            Kirim PAP ke Tukul 💌
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Halaman Bukan Wulan -->
+    <div id="not-wulan-page" class="hidden">
+      <h1>Bukan Wulan Ngapain Kesini!!</h1>
+      <iframe src="https://tenor.com/embed/25894109" width="240" height="240" frameborder="0" allowfullscreen></iframe>
+      <p>Tapi ngga papa deh wulan ulang tahun hari ini kirim doa dan ucapan terbaikmu</p>
+      <button class="button" onclick="window.open('https://www.instagram.com/direct/t/17847371504796247/ ','_blank')">Kirim Ucapanmu ke Wulan</button>
+    </div>
+
+    <!-- Halaman Password Salah -->
+    <div id="wrong-password-page" class="hidden">
+      <h1>Bang Ngga Usah Ngaku Ngaku Deh</h1>
+      <iframe src="https://tenor.com/embed/4627602381236010998" width="240" height="240" frameborder="0" allowfullscreen></iframe>
+      <p>Kamu bukan wulan kan, Ucapin HBD ke wulan aja gih</p>
+      <button class="button" onclick="window.open('https://www.instagram.com/direct/t/17847371504796247/ ','_blank')">Kirim Ucapan HBD ke Wulan</button>
+      <p>Tapi kalo penasaran klik tanda hint di pojok kiri ya bang silahkan refresh</p>
+    </div>
+
+    <!-- Footer Global -->
+    <footer>
+      Made with love by your loved one
+    </footer>
+
+  </div>
+
+  <!-- Musik -->
+  <audio id="background-music" loop autoplay>
+    <source src="assets/song.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    // Fungsi untuk menghapus class 'not-loaded' setelah halaman dimuat
+    window.onload = () => {
+      const c = setTimeout(() => {
+        document.body.classList.remove("not-loaded");
+        clearTimeout(c);
+      }, 1000); // Tunggu 1 detik sebelum memulai animasi
+    };
+
+    function showPassword(){
+      document.getElementById('question-page').classList.add('hidden');
+      document.getElementById('password-page').classList.remove('hidden');
+    }
+    
+    function checkPin(){
+      const pin = document.getElementById('pin-input').value;
+      if(pin==='0000'){
+        document.getElementById('password-page').classList.add('hidden');
+        document.getElementById('main-page').classList.remove('hidden');
+        launchConfetti(); 
+        playSoundCute();
+        // Animasi bunga akan dimulai otomatis karena class 'not-loaded' dihapus
+      } else {
+        document.getElementById('password-page').classList.add('hidden');
+        document.getElementById('wrong-password-page').classList.remove('hidden');
+      }
+    }
+    
+    function showNotWulan(){
+      document.getElementById('question-page').classList.add('hidden');
+      document.getElementById('not-wulan-page').classList.remove('hidden');
+    }
+    
+    function showHint(){
+      alert('Pin rahasianya adalah: 0000');
+    }
+    
+    function playSoundCute(){
+      const sound=new Audio("assets/click.wav");
+      sound.play().catch(()=>{});
+    }
+    
+    const music=document.getElementById("background-music");
+    music.play().catch(()=>{ document.addEventListener('click',()=>music.play(),{once:true}); });
+    
+    function launchConfetti(){
+      confetti({ particleCount:100, spread:80, origin:{y:0.6},
+        colors:['#ff69b4','#ffe4e1','#ffc0cb','#fff0f5'] });
+    }
+    
+    particlesJS('particles-js',{
+      particles:{ number:{value:20,density:{enable:true,value_area:800}},
+        shape:{ type:'image', image:[
+          {src:'https://twemoji.maxcdn.com/v/latest/72x72/1f497.png'},
+          {src:'https://twemoji.maxcdn.com/v/latest/72x72/1f430.png'},
+          {src:'https://twemoji.maxcdn.com/v/latest/72x72/2b50.png'}
+        ] },
+        opacity:{value:0.7,random:true}, size:{value:18,random:true},
+        move:{enable:true,speed:2,random:true,out_mode:'out'} },
+      interactivity:{ events:{ onhover:{enable:true,mode:'repulse'},
+        onclick:{enable:true,mode:'push'} },
+        modes:{ repulse:{distance:80,duration:0.4}, push:{particles_nb:4}} },
+      retina_detect:true });
+  </script>
+</body>
+</html>
